@@ -7,7 +7,7 @@ struct ContentView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Global background
-            Color.paper.base
+            Color.marketplace.background
                 .ignoresSafeArea()
             
             // Grain Effect Overlay

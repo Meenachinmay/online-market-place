@@ -16,8 +16,6 @@ struct ResetPasswordSheet: View {
     
     var body: some View {
         ZStack {
-            Color.paper.veryLight.ignoresSafeArea()
-            
             VStack(spacing: 0) {
                 // Header
                 headerView
@@ -25,124 +23,105 @@ struct ResetPasswordSheet: View {
                 ScrollView {
                     VStack(spacing: 32) {
                         
+                        // Header Text
+                        VStack(spacing: 8) {
+                            Text("Set New Password")
+                                .font(.marketplaceHeadlineXL)
+                                .foregroundColor(Color.marketplace.primaryText)
+                            
+                            Text("Enter the code sent to your email and create a new password.")
+                                .font(.marketplaceBody)
+                                .foregroundColor(Color.marketplace.primaryText.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.top, 20)
+                        
                         // Form Section
-                        VStack(spacing: 24) {
-                            Text("SECURE NEW CIPHER")
-                                .font(.newspaperHeadlineLG)
-                                .foregroundColor(Color.ink.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 8)
-                                .overlay(
-                                    Rectangle()
-                                        .frame(height: 1)
-                                        .foregroundColor(Color.ink.tertiary),
-                                    alignment: .bottom
-                                )
-                            
-                            Text("Enter the code sent to your correspondence address and establish your new cipher.")
-                                .font(.newspaperBody)
-                                .foregroundColor(Color.ink.primary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            
+                        VStack(spacing: 20) {
                             // Code Field
-                            NewspaperInput(
+                            MarketplaceInput(
                                 title: "Verification Code",
-                                text: $viewModel.code
+                                text: $viewModel.code,
+                                placeholder: "123456"
                             )
                             .keyboardType(.numberPad)
                             .textContentType(.oneTimeCode)
                             
                             // New Password Field
-                            NewspaperInput(
-                                title: "New Cipher",
+                            MarketplaceInput(
+                                title: "New Password",
                                 text: $viewModel.newPassword,
-                                isSecure: true
+                                isSecure: true,
+                                placeholder: "••••••••"
                             )
                             .textContentType(.newPassword)
                             
                             // Confirm Password Field
-                            NewspaperInput(
-                                title: "Confirm Cipher",
+                            MarketplaceInput(
+                                title: "Confirm Password",
                                 text: $viewModel.confirmNewPassword,
-                                isSecure: true
+                                isSecure: true,
+                                placeholder: "••••••••"
                             )
                             .textContentType(.newPassword)
                             
                             if let error = viewModel.errorMessage {
-                                errorText(error)
+                                Text("⚠ " + error)
+                                    .font(.marketplaceCaption)
+                                    .foregroundColor(Color.marketplace.primaryAction)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             
                             // Submit Button
-                            Button("Reset Cipher") {
+                            Button("Reset Password") {
                                 let impact = UIImpactFeedbackGenerator(style: .medium)
                                 impact.impactOccurred()
                                 Task {
                                     await viewModel.resetPassword()
                                 }
                             }
-                            .buttonStyle(NewspaperButtonStyle())
+                            .buttonStyle(MarketplaceButtonStyle(isPrimary: true))
                             .padding(.top, 8)
                             .disabled(viewModel.isLoading)
                             
                             if viewModel.isLoading {
-                                Text("Securing credentials...")
-                                    .font(.newspaperFinePrint.italic())
-                                    .foregroundColor(Color.ink.secondary)
+                                ProgressView()
+                                    .tint(Color.marketplace.primaryAction)
                             }
                         }
                         .padding(24)
-                        .background(Color.paper.veryLight)
-                        .newspaperBorderThick()
-                        .neoShadow()
-                        .padding(.bottom, 16)
                     }
                     .padding(24)
                 }
             }
         }
-        .newspaperAlert("Success", isPresented: $viewModel.success) {
-            Button("Proceed to Login") {
+        .marketplaceBackground()
+        .marketplaceAlert("Success", isPresented: $viewModel.success) {
+            Button("Log In") {
                 isPresented = false
                 parentSheetPresented = false
             }
         } message: {
-            Text("Your cipher has been successfully updated. Please identify yourself with your new credentials.")
+            Text("Your password has been successfully updated.")
         }
     }
     
     private var headerView: some View {
         HStack {
-            Text("RESET")
-                .font(.newspaperHeadlineMD)
-                .foregroundColor(Color.ink.primary)
-            
             Spacer()
             
             Button(action: {
                 isPresented = false
             }) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 20))
-                    .foregroundColor(Color.ink.primary)
-                    .padding(8)
-                    .newspaperBorder()
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(Color.marketplace.primaryText)
+                    .padding(12)
+                    .background(Circle().fill(Color.white))
+                    .overlay(Circle().stroke(Color.marketplace.stroke, lineWidth: 1.5))
             }
         }
         .padding(24)
-        .background(Color.paper.veryLight)
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color.ink.tertiary),
-            alignment: .bottom
-        )
-    }
-    
-    private func errorText(_ text: String) -> some View {
-        Text("⚠ " + text)
-            .font(.newspaperCaption)
-            .foregroundColor(Color(hex: "8B0000"))
-            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

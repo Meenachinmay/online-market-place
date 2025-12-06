@@ -1,6 +1,23 @@
 import SwiftUI
 
 extension Font {
+    // MARK: - Marketplace Typography (Rounded)
+    
+    /// Rounded Bold Headline (Large)
+    static let marketplaceHeadlineXL: Font = .system(size: 32, weight: .bold, design: .rounded)
+    
+    /// Rounded Bold Headline (Medium)
+    static let marketplaceHeadlineLG: Font = .system(size: 24, weight: .bold, design: .rounded)
+    
+    /// Rounded Bold Headline (Small)
+    static let marketplaceHeadlineMD: Font = .system(size: 20, weight: .bold, design: .rounded)
+    
+    /// Rounded Medium Body
+    static let marketplaceBody: Font = .system(size: 16, weight: .medium, design: .rounded)
+    
+    /// Rounded Medium Caption
+    static let marketplaceCaption: Font = .system(size: 14, weight: .medium, design: .rounded)
+    
     // MARK: - Newspaper Typography
     
     /// For Masthead ONLY (equivalent to 6rem/4rem)

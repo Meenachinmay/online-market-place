@@ -10,18 +10,25 @@ struct MainTabView: View {
                 HomeView()
                     .tag(0)
                 
-                WalletView()
+                PostView()
                     .tag(1)
                 
-                SodaRBView()
+                WalletView()
                     .tag(2)
+                
+                SettingsView()
+                    .tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never)) // Disable default tab bar
             .ignoresSafeArea(.keyboard) 
             
             // Custom Tab Bar
             if navigator.showTabBar {
-                CustomTabBar(selectedTab: $navigator.selectedTab)
+                VStack(spacing: 0) {
+                    Spacer()
+                    CustomTabBar(selectedTab: $navigator.selectedTab)
+                }
+                .ignoresSafeArea(.keyboard)
             }
         }
         .ignoresSafeArea(.keyboard)

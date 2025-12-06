@@ -13,34 +13,32 @@ struct LoginSheetView: View {
     
     var body: some View {
         ZStack {
-            Color.paper.veryLight.ignoresSafeArea()
-            
             VStack(spacing: 0) {
-                // Header (Not using Section here as it's a sheet, but mimicking style)
+                // Header
                 headerView
                 
                 ScrollView {
                     VStack(spacing: 32) {
                         
-                        // Form Section
-                        VStack(spacing: 24) {
-                            Text("PATRON IDENTIFICATION")
-                                .font(.newspaperHeadlineLG)
-                                .foregroundColor(Color.ink.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 8)
-                                .overlay(
-                                    Rectangle()
-                                        .frame(height: 1)
-                                        .foregroundColor(Color.ink.tertiary),
-                                    alignment: .bottom
-                                )
+                        // Header Text
+                        VStack(spacing: 8) {
+                            Text("Welcome Back")
+                                .font(.marketplaceHeadlineXL)
+                                .foregroundColor(Color.marketplace.primaryText)
                             
+                            Text("Enter your credentials to continue.")
+                                .font(.marketplaceBody)
+                                .foregroundColor(Color.marketplace.primaryText.opacity(0.7))
+                        }
+                        .padding(.top, 20)
+                        
+                        // Form Section
+                        VStack(spacing: 20) {
                             // Email Field
-                            NewspaperInput(
-                                title: "Correspondence Address",
+                            MarketplaceInput(
+                                title: "Email",
                                 text: $viewModel.email,
-                                error: viewModel.emailError.isEmpty ? nil : viewModel.emailError
+                                placeholder: "hello@example.com"
                             )
                             .textContentType(.emailAddress)
                             .keyboardType(.emailAddress)
@@ -49,58 +47,80 @@ struct LoginSheetView: View {
                             .focused($focusedField, equals: .email)
                             
                             // Password Field
-                            NewspaperInput(
-                                title: "Cipher",
+                            MarketplaceInput(
+                                title: "Password",
                                 text: $viewModel.password,
                                 isSecure: true,
-                                error: viewModel.passwordError.isEmpty ? nil : viewModel.passwordError
+                                placeholder: "••••••••"
                             )
                             .textContentType(.password)
                             .focused($focusedField, equals: .password)
                             
+                            // Forgot Password
+                            HStack {
+                                Spacer()
+                                Button("Forgot Password?") {
+                                    showForgotPasswordSheet = true
+                                }
+                                .font(.marketplaceCaption)
+                                .foregroundColor(Color.marketplace.primaryAction)
+                            }
+                            
                             // Login Button
-                            Button("Access Account") {
+                            Button("Log In") {
                                 let impact = UIImpactFeedbackGenerator(style: .medium)
                                 impact.impactOccurred()
                                 viewModel.login()
                             }
-                            .buttonStyle(NewspaperButtonStyle())
-                            .padding(.top, 8)
+                            .buttonStyle(MarketplaceButtonStyle(isPrimary: true))
                             .disabled(viewModel.isLoading)
+                            .opacity(viewModel.isLoading ? 0.7 : 1)
                             
                             if viewModel.isLoading {
-                                Text("Verifying credentials...")
-                                    .font(.newspaperFinePrint.italic())
-                                    .foregroundColor(Color.ink.secondary)
+                                ProgressView()
+                                    .tint(Color.marketplace.primaryAction)
                             }
                         }
-                        .padding(24)
-                        .background(Color.paper.light) // Cream Container
-                        .newspaperBorderThick()
-                        .neoShadow() // Hard Shadow
-                        .padding(.bottom, 16) // Extra spacing for shadow
                         
-                        // Additional Options
-                        VStack(spacing: 16) {
-                            Button("Lost Cipher?") {
-                                showForgotPasswordSheet = true
+                        // Divider
+                        HStack {
+                            Rectangle()
+                                .fill(Color.marketplace.stroke.opacity(0.2))
+                                .frame(height: 1)
+                            Text("Or continue with")
+                                .font(.marketplaceCaption)
+                                .foregroundColor(Color.marketplace.primaryText.opacity(0.6))
+                            Rectangle()
+                                .fill(Color.marketplace.stroke.opacity(0.2))
+                                .frame(height: 1)
+                        }
+                        .padding(.vertical, 8)
+                        
+                        // Social Login
+                        HStack(spacing: 16) {
+                            SocialLoginButton(
+                                iconName: "apple.logo",
+                                label: "Apple",
+                                accentColor: Color.marketplace.lavender
+                            ) {
+                                // Action
                             }
-                            .font(.newspaperCaption.italic())
-                            .foregroundColor(Color.ink.primary)
                             
-                            Text("All correspondence is secured within our archives.")
-                                .font(.newspaperFinePrint)
-                                .foregroundColor(Color.ink.secondary)
+                            SocialLoginButton(
+                                iconName: "g.circle.fill",
+                                label: "Google",
+                                accentColor: Color.marketplace.softYellow
+                            ) {
+                                // Action
+                            }
                         }
                     }
                     .padding(24)
                 }
             }
         }
-        .newspaperAlert("Notice", isPresented: $viewModel.showError) {
-            Button("Acknowledge") {
-                viewModel.showError = false
-            }
+        .marketplaceAlert("Error", isPresented: $viewModel.showError) {
+             Button("OK") { viewModel.showError = false }
         } message: {
             Text(viewModel.errorMessage)
         }
@@ -112,37 +132,26 @@ struct LoginSheetView: View {
         .sheet(isPresented: $showForgotPasswordSheet) {
             ForgotPasswordSheet(isPresented: $showForgotPasswordSheet)
         }
+        .marketplaceBackground()
     }
     
     private var headerView: some View {
         HStack {
-            Text("IDENTIFICATION")
-                .font(.newspaperHeadlineMD)
-                .foregroundColor(Color.ink.primary)
-            
             Spacer()
             
             Button(action: {
                 isPresented = false
             }) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 20))
-                    .foregroundColor(Color.ink.primary)
-                    .padding(8)
-                    .newspaperBorder()
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(Color.marketplace.primaryText)
+                    .padding(12)
+                    .background(Circle().fill(Color.white))
+                    .overlay(Circle().stroke(Color.marketplace.stroke, lineWidth: 1.5))
             }
         }
         .padding(24)
-        .background(Color.paper.veryLight) // White Header
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color.ink.tertiary),
-            alignment: .bottom
-        )
     }
-    
-
 }
 
 #Preview {
