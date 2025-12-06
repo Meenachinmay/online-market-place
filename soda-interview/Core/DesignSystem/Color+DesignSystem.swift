@@ -13,7 +13,30 @@ extension Color {
     /// Palette for Functional Signals (Action, Error, Success)
     static let signal = SignalPalette()
     
+    /// Palette for the Online Marketplace Theme
+    static let marketplace = MarketplacePalette()
+    
     // MARK: - Palettes
+    
+    struct MarketplacePalette {
+        /// Off-white / Pure White
+        let background = Color(hex: "F9F9F9")
+        
+        /// Deep Midnight Navy (#1A1A2E)
+        let primaryText = Color(hex: "1A1A2E")
+        
+        /// Same as PrimaryText (approx 1.5px width)
+        let stroke = Color(hex: "1A1A2E")
+        
+        /// Deep Indigo (#4338ca)
+        let primaryAction = Color(hex: "4338CA")
+        
+        // Accents
+        let lavender = Color(hex: "E6E6FA")
+        let softYellow = Color(hex: "FFFACD")
+        let mintGreen = Color(hex: "98FF98")
+        let palePink = Color(hex: "FFD1DC")
+    }
     
     struct PaperPalette {
         /// Darkest paper tone, used for thick borders or deep depth (#D9C298)

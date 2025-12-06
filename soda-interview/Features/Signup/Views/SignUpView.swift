@@ -11,8 +11,6 @@ struct SignUpView: View {
     
     var body: some View {
         ZStack {
-            Color.paper.veryLight.ignoresSafeArea()
-            
             VStack(spacing: 0) {
                 // Header
                 headerView
@@ -20,34 +18,35 @@ struct SignUpView: View {
                 ScrollView {
                     VStack(spacing: 32) {
                         
-                        // Form Section
-                        VStack(spacing: 24) {
-                            Text("PATRON REGISTRY")
-                                .font(.newspaperHeadlineLG)
-                                .foregroundColor(Color.ink.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 8)
-                                .overlay(
-                                    Rectangle()
-                                        .frame(height: 1)
-                                        .foregroundColor(Color.ink.tertiary),
-                                    alignment: .bottom
-                                )
+                        // Header Text
+                        VStack(spacing: 8) {
+                            Text("Create Account")
+                                .font(.marketplaceHeadlineXL)
+                                .foregroundColor(Color.marketplace.primaryText)
                             
-                            // Display Name Field
-                            NewspaperInput(
+                            Text("Join our community of experts.")
+                                .font(.marketplaceBody)
+                                .foregroundColor(Color.marketplace.primaryText.opacity(0.7))
+                        }
+                        .padding(.top, 20)
+                        
+                        // Form Section
+                        VStack(spacing: 20) {
+                            
+                            // Name Field
+                            MarketplaceInput(
                                 title: "Full Name",
                                 text: $viewModel.displayName,
-                                error: viewModel.displayNameError.isEmpty ? nil : viewModel.displayNameError
+                                placeholder: "John Doe"
                             )
                             .textContentType(.name)
                             .focused($focusedField, equals: .displayName)
                             
                             // Email Field
-                            NewspaperInput(
-                                title: "Correspondence Address",
+                            MarketplaceInput(
+                                title: "Email Address",
                                 text: $viewModel.email,
-                                error: viewModel.emailError.isEmpty ? nil : viewModel.emailError
+                                placeholder: "hello@example.com"
                             )
                             .textContentType(.emailAddress)
                             .keyboardType(.emailAddress)
@@ -56,52 +55,45 @@ struct SignUpView: View {
                             .focused($focusedField, equals: .email)
                             
                             // Password Field
-                            NewspaperInput(
-                                title: "Cipher",
+                            MarketplaceInput(
+                                title: "Password",
                                 text: $viewModel.password,
                                 isSecure: true,
-                                error: viewModel.passwordError.isEmpty ? nil : viewModel.passwordError
+                                placeholder: "••••••••"
                             )
                             .textContentType(.newPassword)
                             .focused($focusedField, equals: .password)
                             
                             // Sign Up Button
-                            Button("Submit Credentials") {
+                            Button("Create Account") {
                                 let impact = UIImpactFeedbackGenerator(style: .medium)
                                 impact.impactOccurred()
                                 viewModel.signup()
                             }
-                            .buttonStyle(NewspaperButtonStyle(isUrgent: true))
-                            .padding(.top, 8)
+                            .buttonStyle(MarketplaceButtonStyle(isPrimary: true))
                             .disabled(viewModel.isLoading)
+                            .padding(.top, 8)
                             
                             if viewModel.isLoading {
-                                Text("Recording in ledger...")
-                                    .font(.newspaperFinePrint.italic())
-                                    .foregroundColor(Color.ink.secondary)
+                                ProgressView()
+                                    .tint(Color.marketplace.primaryAction)
                             }
                         }
-                        .padding(24)
-                        .background(Color.paper.light) // Cream Container
-                        .newspaperBorderThick()
-                        .neoShadow() // Hard Shadow
-                        .padding(.bottom, 16) // Extra spacing for shadow
                         
                         // Disclaimer
-                        Text("By submitting this ledger, you agree to abide by the Establishment's Terms of Service and Privacy Policy.")
-                            .font(.newspaperFinePrint)
-                            .foregroundColor(Color.ink.secondary)
+                        Text("By creating an account, you agree to our Terms of Service and Privacy Policy.")
+                            .font(.marketplaceCaption)
+                            .foregroundColor(Color.marketplace.primaryText.opacity(0.6))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 24)
+                            .padding(.top, 16)
                     }
                     .padding(24)
                 }
             }
         }
-        .newspaperAlert("Notice", isPresented: $viewModel.showError) {
-            Button("Acknowledge") {
-                viewModel.showError = false
-            }
+        .marketplaceAlert("Notice", isPresented: $viewModel.showError) {
+            Button("OK") { viewModel.showError = false }
         } message: {
             Text(viewModel.errorMessage)
         }
@@ -112,37 +104,26 @@ struct SignUpView: View {
                     isPresented = false
                 }
         }
+        .marketplaceBackground()
     }
     
     private var headerView: some View {
         HStack {
-            Text("REGISTRATION")
-                .font(.newspaperHeadlineMD)
-                .foregroundColor(Color.ink.primary)
-            
             Spacer()
             
             Button(action: {
                 isPresented = false
             }) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 20))
-                    .foregroundColor(Color.ink.primary)
-                    .padding(8)
-                    .newspaperBorder()
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(Color.marketplace.primaryText)
+                    .padding(12)
+                    .background(Circle().fill(Color.white))
+                    .overlay(Circle().stroke(Color.marketplace.stroke, lineWidth: 1.5))
             }
         }
         .padding(24)
-        .background(Color.paper.veryLight) // White Header
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color.ink.tertiary),
-            alignment: .bottom
-        )
     }
-    
-
 }
 
 #Preview {

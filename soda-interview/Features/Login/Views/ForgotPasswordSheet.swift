@@ -7,8 +7,6 @@ struct ForgotPasswordSheet: View {
     
     var body: some View {
         ZStack {
-            Color.paper.veryLight.ignoresSafeArea()
-            
             VStack(spacing: 0) {
                 // Header
                 headerView
@@ -16,64 +14,63 @@ struct ForgotPasswordSheet: View {
                 ScrollView {
                     VStack(spacing: 32) {
                         
+                        // Header Text
+                        VStack(spacing: 8) {
+                            Text("Reset Password")
+                                .font(.marketplaceHeadlineXL)
+                                .foregroundColor(Color.marketplace.primaryText)
+                            
+                            Text("Enter your email address to receive a verification code.")
+                                .font(.marketplaceBody)
+                                .foregroundColor(Color.marketplace.primaryText.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.top, 20)
+                        
                         // Form Section
-                        VStack(spacing: 24) {
-                            Text("RECOVER ACCESS")
-                                .font(.newspaperHeadlineLG)
-                                .foregroundColor(Color.ink.primary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.bottom, 8)
-                                .overlay(
-                                    Rectangle()
-                                        .frame(height: 1)
-                                        .foregroundColor(Color.ink.tertiary),
-                                    alignment: .bottom
-                                )
-                            
-                            Text("Please provide your correspondence address. We shall dispatch a secret code to verify your identity.")
-                                .font(.newspaperBody)
-                                .foregroundColor(Color.ink.primary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            
+                        VStack(spacing: 20) {
                             // Email Field
-                            NewspaperInput(
-                                title: "Correspondence Address",
+                            MarketplaceInput(
+                                title: "Email Address",
                                 text: $viewModel.email,
-                                error: viewModel.errorMessage
+                                placeholder: "hello@example.com"
                             )
                             .textContentType(.emailAddress)
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
                             .autocorrectionDisabled()
                             
+                            // Error Message
+                            if let error = viewModel.errorMessage {
+                                Text(error)
+                                    .font(.marketplaceCaption)
+                                    .foregroundColor(Color.marketplace.primaryAction) // Using action color as 'alert' color, or could define error color
+                            }
+                            
                             // Submit Button
-                            Button("Request Code") {
+                            Button("Send Code") {
                                 let impact = UIImpactFeedbackGenerator(style: .medium)
                                 impact.impactOccurred()
                                 Task {
                                     await viewModel.sendResetLink()
                                 }
                             }
-                            .buttonStyle(NewspaperButtonStyle())
-                            .padding(.top, 8)
+                            .buttonStyle(MarketplaceButtonStyle(isPrimary: true))
                             .disabled(viewModel.isLoading)
+                            .padding(.top, 8)
                             
                             if viewModel.isLoading {
-                                Text("Dispatching carrier pigeon...")
-                                    .font(.newspaperFinePrint.italic())
-                                    .foregroundColor(Color.ink.secondary)
+                                ProgressView()
+                                    .tint(Color.marketplace.primaryAction)
                             }
                         }
                         .padding(24)
-                        .background(Color.paper.light) // Cream Container
-                        .newspaperBorderThick()
-                        .neoShadow()
-                        .padding(.bottom, 16)
                     }
                     .padding(24)
                 }
             }
         }
+        .marketplaceBackground() // Adds grain
         .onChange(of: viewModel.navigateToResetPassword) { shouldNavigate in
             if shouldNavigate {
                 showResetPasswordSheet = true
@@ -86,33 +83,21 @@ struct ForgotPasswordSheet: View {
     
     private var headerView: some View {
         HStack {
-            Text("RECOVERY")
-                .font(.newspaperHeadlineMD)
-                .foregroundColor(Color.ink.primary)
-            
             Spacer()
             
             Button(action: {
                 isPresented = false
             }) {
                 Image(systemName: "xmark")
-                    .font(.system(size: 20))
-                    .foregroundColor(Color.ink.primary)
-                    .padding(8)
-                    .newspaperBorder()
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(Color.marketplace.primaryText)
+                    .padding(12)
+                    .background(Circle().fill(Color.white))
+                    .overlay(Circle().stroke(Color.marketplace.stroke, lineWidth: 1.5))
             }
         }
         .padding(24)
-        .background(Color.paper.veryLight) // White Header
-        .overlay(
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(Color.ink.tertiary),
-            alignment: .bottom
-        )
     }
-    
-
 }
 
 #Preview {
