@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct WalletView: View {
+    @StateObject private var viewModel = WalletViewModel()
+    
     var body: some View {
         ZStack {
             Color.marketplace.background.ignoresSafeArea()
@@ -12,6 +14,22 @@ struct WalletView: View {
                         .font(.marketplaceHeadlineLG)
                         .foregroundColor(Color.marketplace.primaryText)
                     Spacer()
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else {
+                        Button(action: {
+                            Task { await viewModel.fetchWallet() }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 20))
+                                .foregroundColor(Color.marketplace.primaryText)
+                                .padding(12)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.marketplace.stroke, lineWidth: 1.5))
+                        }
+                    }
                 }
                 .padding(24)
                 .background(Color.marketplace.background.ignoresSafeArea(edges: .top))
@@ -22,6 +40,12 @@ struct WalletView: View {
                     alignment: .bottom
                 )
                 
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .padding()
+                }
+                
                 ScrollView {
                     VStack(spacing: 24) {
                         // Total Balance Card
@@ -31,7 +55,7 @@ struct WalletView: View {
                                     .font(.system(size: 24))
                                     .foregroundColor(.white)
                                 Spacer()
-                                Text("USD")
+                                Text("USD") // Assuming balance is in USD or similar currency
                                     .font(.marketplaceCaption)
                                     .bold()
                                     .foregroundColor(.white.opacity(0.8))
@@ -46,7 +70,7 @@ struct WalletView: View {
                                     .font(.marketplaceBody)
                                     .foregroundColor(.white.opacity(0.8))
                                 
-                                Text("$12,450.00")
+                                Text(formattedBalance)
                                     .font(.system(size: 40, weight: .bold, design: .rounded))
                                     .foregroundColor(.white)
                             }
@@ -88,7 +112,7 @@ struct WalletView: View {
                                     .font(.marketplaceBody)
                                     .foregroundColor(Color.marketplace.primaryText.opacity(0.7))
                                 
-                                Text("8,500")
+                                Text("\(viewModel.wallet?.sodaPoints ?? 0)")
                                     .font(.system(size: 40, weight: .bold, design: .rounded))
                                     .foregroundColor(Color.marketplace.primaryText)
                             }
@@ -103,8 +127,37 @@ struct WalletView: View {
                     }
                     .padding(24)
                 }
+                .refreshable {
+                    await viewModel.fetchWallet()
+                }
             }
         }
+        .onAppear {
+            Task {
+                if viewModel.wallet == nil {
+                    await viewModel.fetchWallet()
+                }
+            }
+        }
+    }
+    
+    var formattedBalance: String {
+        guard let balance = viewModel.wallet?.sodaBalance else { return "$0.00" }
+        // Assuming balance is just a number (e.g. 100). If cents, divide by 100.
+        // Prompt says "wallet balance". API returns int64.
+        // I will assume it is major units for now given the previous placeholder "$12,450.00".
+        // Or if it's cents, 1245000.
+        // I'll format it as currency.
+        return NumberFormatter.currency.string(from: NSNumber(value: balance)) ?? "$\(balance)"
+    }
+}
+
+extension NumberFormatter {
+    static var currency: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencySymbol = "$" // Or retrieve from locale/model
+        return formatter
     }
 }
 
