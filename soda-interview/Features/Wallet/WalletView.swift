@@ -55,7 +55,7 @@ struct WalletView: View {
                                     .font(.system(size: 24))
                                     .foregroundColor(.white)
                                 Spacer()
-                                Text("USD") // Assuming balance is in USD or similar currency
+                                Text("YEN") // Assuming balance is in USD or similar currency
                                     .font(.marketplaceCaption)
                                     .bold()
                                     .foregroundColor(.white.opacity(0.8))
@@ -142,7 +142,7 @@ struct WalletView: View {
     }
     
     var formattedBalance: String {
-        guard let balance = viewModel.wallet?.sodaBalance else { return "$0.00" }
+        guard let balance = viewModel.wallet?.sodaBalance else { return "0.00" }
         // Assuming balance is just a number (e.g. 100). If cents, divide by 100.
         // Prompt says "wallet balance". API returns int64.
         // I will assume it is major units for now given the previous placeholder "$12,450.00".
@@ -156,7 +156,7 @@ extension NumberFormatter {
     static var currency: NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencySymbol = "$" // Or retrieve from locale/model
+        formatter.currencySymbol = "￥" // Or retrieve from locale/model
         return formatter
     }
 }

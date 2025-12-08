@@ -10,7 +10,7 @@ struct LoginView: View {
                 VStack(spacing: 0) {
                     // Modern Header
                     HStack {
-                        Text("SODA")
+                        Text("スニカー")
                             .font(.marketplaceHeadlineLG)
                             .foregroundColor(Color.marketplace.primaryText)
                         Spacer()
